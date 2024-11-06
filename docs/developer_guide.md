@@ -37,7 +37,7 @@ Write unit tests for new features.
 
 ## Resources
 
-- NexChain API Documentation
+- [NexChain API Documentation](https://github.com/KOSASIH/NexChain-Core/tree/main/docs) 
 - Community Forum
 - [GitHub Issues](https://github.com/KOSASIH/NexChain-Core/issues) 
 
