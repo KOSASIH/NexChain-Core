@@ -39,7 +39,7 @@ Write unit tests for new features.
 
 - NexChain API Documentation
 - Community Forum
-- GitHub Issues
+- [GitHub Issues](https://github.com/KOSASIH/NexChain-Core/issues) 
 
 # Conclusion
 This guide provides the foundational knowledge needed to start developing on the NexChain platform. For further assistance, refer to the community resources or documentation.
