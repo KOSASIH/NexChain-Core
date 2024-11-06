@@ -1,2 +1,2 @@
 # NexChain-Core
-NexChain-Core is the foundational repository for the NexChain blockchain platform, providing the essential infrastructure, protocols, and libraries that drive the ecosystem.
+NexChain-Core is the foundational repository for the NexChain blockchain platform, providing the essential infrastructure, protocols, and libraries that drive the ecosystem. This repository includes the core components for consensus mechanisms, networking, blockchain management, and smart contract execution, all designed for high scalability, security, and interoperability. With comprehensive documentation and a robust testing framework, NexChain-Core empowers developers to build and deploy decentralized applications (dApps) efficiently, fostering innovation in the blockchain space.
