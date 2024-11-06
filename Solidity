@@ -1,0 +1,179 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+/**
+ * @title NexChainAdvanced
+ * @dev Kontrak cerdas kompleks untuk platform NexChain yang mendukung manajemen akun,
+ * pencatatan transaksi, sistem izin, dan operasi canggih lainnya.
+ */
+contract NexChainAdvanced {
+    
+    // Struktur data untuk menyimpan informasi akun
+    struct Account {
+        address accountAddress;
+        uint256 balance;
+        bool isActive;
+        uint256 createdAt;
+        string role;
+    }
+
+    // Struktur data untuk menyimpan riwayat transaksi
+    struct Transaction {
+        address sender;
+        address receiver;
+        uint256 amount;
+        uint256 timestamp;
+        string memo;
+    }
+
+    // Peta akun dan transaksi
+    mapping(address => Account) private accounts;
+    Transaction[] private transactions;
+
+    // Sistem izin menggunakan peran
+    mapping(address => bool) private admins;
+    mapping(address => bool) private authorizedOperators;
+    address public owner;
+
+    // Event untuk log aktivitas
+    event AccountCreated(address indexed accountAddress, uint256 balance, string role);
+    event AccountDeactivated(address indexed accountAddress);
+    event TransactionRecorded(address indexed sender, address indexed receiver, uint256 amount, string memo);
+    event PermissionGranted(address indexed operator, string role);
+    event PermissionRevoked(address indexed operator, string role);
+    event BalanceUpdated(address indexed accountAddress, uint256 newBalance);
+
+    // Modifier untuk izin akses
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Anda bukan pemilik kontrak");
+        _;
+    }
+
+    modifier onlyAdmin() {
+        require(admins[msg.sender], "Anda bukan admin");
+        _;
+    }
+
+    modifier onlyAuthorizedOperator() {
+        require(authorizedOperators[msg.sender], "Operator tidak diizinkan");
+        _;
+    }
+
+    constructor() {
+        owner = msg.sender;
+        admins[msg.sender] = true;
+    }
+
+    /**
+     * @dev Membuat akun baru dengan peran dan saldo awal.
+     * Hanya pemilik atau admin yang dapat membuat akun.
+     */
+    function createAccount(address _accountAddress, uint256 _balance, string memory _role) public onlyAdmin {
+        require(!accounts[_accountAddress].isActive, "Akun sudah ada");
+        
+        accounts[_accountAddress] = Account({
+            accountAddress: _accountAddress,
+            balance: _balance,
+            isActive: true,
+            createdAt: block.timestamp,
+            role: _role
+        });
+
+        emit AccountCreated(_accountAddress, _balance, _role);
+    }
+
+    /**
+     * @dev Mengubah status akun menjadi tidak aktif (deactivate).
+     * Hanya pemilik atau admin yang dapat menonaktifkan akun.
+     */
+    function deactivateAccount(address _accountAddress) public onlyAdmin {
+        require(accounts[_accountAddress].isActive, "Akun tidak aktif");
+        
+        accounts[_accountAddress].isActive = false;
+        
+        emit AccountDeactivated(_accountAddress);
+    }
+
+    /**
+     * @dev Memperbarui saldo akun.
+     */
+    function updateBalance(address _accountAddress, uint256 _newBalance) public onlyAuthorizedOperator {
+        require(accounts[_accountAddress].isActive, "Akun tidak aktif");
+        
+        accounts[_accountAddress].balance = _newBalance;
+        
+        emit BalanceUpdated(_accountAddress, _newBalance);
+    }
+
+    /**
+     * @dev Mencatat transaksi baru ke dalam riwayat transaksi.
+     */
+    function recordTransaction(address _receiver, uint256 _amount, string memory _memo) public {
+        require(accounts[msg.sender].isActive, "Akun pengirim tidak aktif");
+        require(accounts[_receiver].isActive, "Akun penerima tidak aktif");
+        require(accounts[msg.sender].balance >= _amount, "Saldo tidak mencukupi");
+
+        accounts[msg.sender].balance -= _amount;
+        accounts[_receiver].balance += _amount;
+
+        transactions.push(Transaction({
+            sender: msg.sender,
+            receiver: _receiver,
+            amount: _amount,
+            timestamp: block.timestamp,
+            memo: _memo
+        }));
+        
+        emit TransactionRecorded(msg.sender, _receiver, _amount, _memo);
+    }
+
+    /**
+     * @dev Mengambil detail transaksi berdasarkan indeks.
+     */
+    function getTransaction(uint256 _index) public view returns (Transaction memory) {
+        require(_index < transactions.length, "Indeks transaksi tidak valid");
+        return transactions[_index];
+    }
+
+    /**
+     * @dev Memberikan izin (grant) kepada operator.
+     */
+    function grantPermission(address _operator, string memory _role) public onlyOwner {
+        if (keccak256(abi.encodePacked(_role)) == keccak256("admin")) {
+            admins[_operator] = true;
+        } else if (keccak256(abi.encodePacked(_role)) == keccak256("operator")) {
+            authorizedOperators[_operator] = true;
+        }
+        
+        emit PermissionGranted(_operator, _role);
+    }
+
+    /**
+     * @dev Mencabut izin (revoke) dari operator.
+     */
+    function revokePermission(address _operator, string memory _role) public onlyOwner {
+        if (keccak256(abi.encodePacked(_role)) == keccak256("admin")) {
+            admins[_operator] = false;
+        } else if (keccak256(abi.encodePacked(_role)) == keccak256("operator")) {
+            authorizedOperators[_operator] = false;
+        }
+        
+        emit PermissionRevoked(_operator, _role);
+    }
+
+    /**
+     * @dev Mengambil saldo akun.
+     */
+    function getBalance(address _accountAddress) public view returns (uint256) {
+        require(accounts[_accountAddress].isActive, "Akun tidak aktif");
+        return accounts[_accountAddress].balance;
+    }
+
+    /**
+     * @dev Mengambil informasi akun.
+     */
+    function getAccountInfo(address _accountAddress) public view returns (Account memory) {
+        require(accounts[_accountAddress].isActive, "Akun tidak aktif");
+        return accounts[_accountAddress];
+    }
+}
