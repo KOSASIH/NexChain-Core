@@ -1,0 +1,29 @@
+{
+  "name": "nexchain-core",
+  "version": "1.0.0",
+  "description": "A high-performance decentralized application framework.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "deploy": "./scripts/deploy.sh",
+    "setup": "./scripts/setup_env.sh"
+  },
+  "keywords": [
+    "blockchain",
+    "dapp",
+    "smart-contracts",
+ "nexchain"
+  ],
+  "author": "KOSASIH",
+  "license": "MIT",
+  "dependencies": {
+    "web3": "^1.6.0",
+    "dotenv": "^10.0.0",
+    "openzeppelin-solidity": "^4.3.0"
+  },
+  "devDependencies": {
+    "truffle": "^5.4.0",
+    "ganache-cli": "^6.12.2"
+  }
+}
