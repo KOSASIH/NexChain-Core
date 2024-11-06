@@ -3,6 +3,10 @@
 ## Introduction
 NexChain is a high-performance blockchain platform designed to support decentralized applications (dApps) and smart contracts. This document provides an overview of the system architecture, including its components and interactions.
 
+## Diagram
+
+[NexChain diagram](NexChain.jpeg)
+
 ## Key Components
 - **Consensus Layer**: Implements various consensus mechanisms (e.g., DPoS, BFT) to ensure network security and transaction validation.
 - **Networking Layer**: Manages peer-to-peer communication and remote procedure calls (RPC) for data exchange between nodes.
